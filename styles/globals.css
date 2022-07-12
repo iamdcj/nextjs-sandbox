@@ -14,3 +14,13 @@ a {
 * {
   box-sizing: border-box;
 }
+
+blockquote {
+  font-size: 24px;
+} 
+
+
+blockquote .quote {
+  font-size: 34px;
+} 
+
