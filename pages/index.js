@@ -1,10 +1,9 @@
 import Head from "next/head";
-import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { useMemo, useState, useEffect } from "react";
 import { useAuthentication } from "./providers/authentication";
 
-export default function Home({ data }) {
+export default function Home({ data = null }) {
   const { user } = useAuthentication();
   const [quoteIndex, setQuoteIndex] = useState(null);
 
