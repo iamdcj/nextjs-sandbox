@@ -1,9 +1,10 @@
 import Head from "next/head";
+import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { useMemo, useState, useEffect } from "react";
 import { useAuthentication } from "./providers/authentication";
 
-export default function Home({ data = null }) {
+export default function Home({ data }) {
   const { user } = useAuthentication();
   const [quoteIndex, setQuoteIndex] = useState(null);
 
@@ -16,17 +17,12 @@ export default function Home({ data = null }) {
   }, []);
 
   const selected = useMemo(() => {
-    if (quoteIndex === null || !data) {
-      return {
-        quote: "People only see what you allow them to see.",
-        source: "Dr. Jennifer Melfi",
-      };
+    if(!data) {
+      return;
     }
-
+    
     return data[quoteIndex];
   }, [quoteIndex, data]);
-
-  console.log(selected);
 
   return (
     <div className={styles.container}>
@@ -65,4 +61,32 @@ export default function Home({ data = null }) {
       </footer>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  let data = null;
+
+  try {
+    const res = await fetch(
+      "https://api.github.com/gists/68cf4acca22d7dca00eadd4e54b7f53c",
+      {
+        headers: {
+          Authorization: `token ${process.env.PAT}`,
+        },
+      }
+    );
+
+    data = await res.json();
+
+    data = JSON.parse(data.files["sopranos-quotes.json"].content);
+  } catch (error) {
+    data = [
+      {
+        quote: "People only see what you allow them to see.",
+        source: "Dr. Jennifer Melfi",
+      },
+    ];
+  }
+
+  return { props: { data } };
 }
