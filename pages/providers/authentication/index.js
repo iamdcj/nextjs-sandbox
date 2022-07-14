@@ -1,12 +1,41 @@
-export const AuthenticationContext = React.createContext(null);
+import { createContext, useEffect, useState, useContext } from "react";
+import returnFirebaseApp from "../../clients/firebase";
+import { getAuth } from "firebase/auth";
+
+export const AuthenticationContext = createContext(null);
 
 export const AuthenticationProvider = ({ children }) => {
-  const [user, setUser] = React.useState(null);
+  const [user, setUser] = useState({
+    status: "loading",
+  });
 
-  const value = user;
+  useEffect(() => {
+    try {
+      const auth = getAuth(returnFirebaseApp());
+
+      auth.onAuthStateChanged(async (user) => {
+        debugger;
+        if (user) {
+          setUser({
+            status: "authenticated",
+            ...user,
+          });
+        } else {
+          setUser({
+            status: "anonymous",
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      setUser({
+        status: "anonymous",
+      });
+    }
+  }, []);
 
   return (
-    <AuthenticationContext.Provider value={user}>
+    <AuthenticationContext.Provider value={{ user }}>
       {children}
     </AuthenticationContext.Provider>
   );
