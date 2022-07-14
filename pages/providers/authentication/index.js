@@ -4,7 +4,7 @@ import { getAuth } from "firebase/auth";
 
 export const AuthenticationContext = createContext(null);
 
-export const AuthenticationProvider = ({ children }) => {
+const AuthenticationProvider = ({ children }) => {
   const [user, setUser] = useState({
     status: "loading",
   });
@@ -50,3 +50,5 @@ export const useAuthentication = () => {
 
   return auth;
 };
+
+export default AuthenticationProvider;
