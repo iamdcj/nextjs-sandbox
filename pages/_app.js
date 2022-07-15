@@ -1,5 +1,5 @@
+import AuthenticationProvider from "../providers/authentication";
 import "../styles/globals.css";
-import AuthenticationProvider from "./providers/authentication";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -8,5 +8,7 @@ function MyApp({ Component, pageProps }) {
     </AuthenticationProvider>
   );
 }
+
+
 
 export default MyApp;

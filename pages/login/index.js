@@ -1,27 +1,29 @@
 import Head from "next/head";
-import Image from "next/image";
+import styles from "./login.module.css"
 import { useMemo, useState, useEffect } from "react";
-import { useAuthentication } from "../providers/authentication";
+import { useAuthentication } from "../../providers/authentication";
 
 export default function Home({ data }) {
   const { user } = useAuthentication();
-  const [quoteIndex, setQuoteIndex] = useState(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  useEffect(() => {
-    if (!data || data.length < 1) {
-      return;
-    }
+  const handleChange = ({ target }) => {
+    const { name, value } = target;
 
-    setQuoteIndex(Math.floor(Math.random() * data.length));
-  }, []);
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
-  const selected = useMemo(() => {
-    if(!data) {
-      return;
-    }
+  const handleSubmission = (event) => {
+    event.preventDefault();
 
-    return data[quoteIndex];
-  }, [quoteIndex, data]);
+    console.log(formData);
+  };
 
   return (
     <div className={styles.container}>
@@ -36,12 +38,21 @@ export default function Home({ data }) {
       </header>
 
       <main className={styles.main}>
-        {selected && (
-          <blockquote>
-            <p className="quote">&ldquo;{selected.quote}&rdquo;</p>
-            <p>- {selected.source}</p>
-          </blockquote>
-        )}
+        <form onSubmit={handleSubmission}>
+          <input
+            type="email"
+            name="email"
+            onChange={handleChange}
+            value={formData.email}
+          />
+          <input
+            type="password"
+            name="password"
+            onChange={handleChange}
+            value={formData.password}
+          />
+          <button type="submit">Login</button>
+        </form>
       </main>
 
       <footer className={styles.footer}>
@@ -60,32 +71,4 @@ export default function Home({ data }) {
       </footer>
     </div>
   );
-}
-
-export async function getServerSideProps() {
-  let data = null;
-
-  try {
-    const res = await fetch(
-      "https://api.github.com/gists/68cf4acca22d7dca00eadd4e54b7f53c",
-      {
-        headers: {
-          Authorization: `token ${process.env.PAT}`,
-        },
-      }
-    );
-
-    data = await res.json();
-
-    data = JSON.parse(data.files["sopranos-quotes.json"].content);
-  } catch (error) {
-    data = [
-      {
-        quote: "People only see what you allow them to see.",
-        source: "Dr. Jennifer Melfi",
-      },
-    ];
-  }
-
-  return { props: { data } };
 }
